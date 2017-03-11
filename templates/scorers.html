@@ -1,0 +1,12 @@
+<table class="goaltable">
+	<tr>
+		<th scope="col">Player</th>
+		<th scope="col">Goals</th>
+	</tr>
+	{% for s in scorers %}
+	<tr>
+		<td>{{ s.0 }}</td>
+		<td>{{ s.1 }}</td>
+	</tr>
+	{% endfor %}
+</table>

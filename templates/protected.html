@@ -1,0 +1,18 @@
+<table class="squadtable">
+	<tr>
+		<th>Player</th>
+		<th>Email</th>
+		<th>Phone</th>
+		<!-- th>Shirt</th -->
+		<th>Rego</th>
+	</tr>
+	{% for p in players %}
+	<tr>
+		<td>{{p.first_name}} {{p.last_name}}</td>
+		<td>{{ p.email }}</td>
+		<td>{{ p.phone }}</td>
+		<!-- td>{{ p.shirt }}</td -->
+		<td>{{ p.registration }}</td>
+	</tr>
+	{% endfor %}
+</table>

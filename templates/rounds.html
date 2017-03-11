@@ -1,0 +1,11 @@
+<div id="playerindex">
+	<div class="playersummary">
+		<p>ROUNDS</p>
+	</div>
+	{% for r in rounds %}
+		<div class="playername">
+			<p><a href="{{url_args.base_url}}/player/?round={{r.num}}&year={{r.year}}">{% ifequal "" r.caption %}Round {{ r.num }}{% else %}{{ r.caption }}{% endifequal %} - {{ r.date|date:"D d M" }}</a></p>
+		</div>
+	{% endfor %}
+	<img src="/images/deewhylogo_100.gif"/>
+</div>

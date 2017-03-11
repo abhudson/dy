@@ -1,0 +1,20 @@
+{% ifequal "0" url_args.year %}
+	<p id="playerheader">
+		Shirt washing: Select a year first
+	</p>
+{% else %}
+	<p>Still to wash the shirts: {{ remaining }}
+	<!-- p>Daniel, Neil and Gianni exempt due to refereeing duties</p -->
+	<table id="goaltable">
+		<tr>
+			<th scope="col">Round</th>
+			<th scope="col">Shirts</th>
+		</tr>
+		{% for r in rounds %}
+		<tr>
+			<td>{{ r.0 }}</td>
+			<td>{{ r.1 }}</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endifequal %}

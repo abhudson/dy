@@ -1,0 +1,51 @@
+<html>
+<body>
+<p>Hi team,</p>
+
+<p>This is an automated message to remind you about Dee Why AL5's next game:</p>
+<table>
+<tr>
+<td>Date:</td><td>{{ current.date|date:"l d F" }}</td>
+</tr>
+<tr>
+<td>Time:</td><td>{{ current.time|time:"fA" }}</td>
+</tr>
+<tr>
+<td>Ground:</td><td>{{ current.location.name }} {% if current.location.address %}- {{ current.location.address }}{% endif %} [<a href="{{ current.location.map }}">View the map</a>]</td>
+</tr>
+<tr>
+<td>Opposition:</td><td>{{ current.opponent }}</td>
+</tr>
+</table>
+
+{% ifequal current.homeaway "home" %}
+<p>It is a home game</p>
+{% endifequal %}
+{% ifequal current.homeaway "away" %}
+<p>It is an away game</p>
+{% endifequal %}
+	
+<p>The following players have indicated that they will be away:</p>
+<ul>
+{% if current.get_away_set %}
+	{% for p in current.get_away_set %}
+	    <li>{{ p }}</li>
+	{% endfor %}
+{% else %}
+    <li>Nobody!</li>
+{% endif %}
+</ul>
+
+<p>This means we currently have {{ current.get_player_count }} players available for the game. Please update <a href="http://dy.appspot.com">the team website</a> if your availability is incorrect.</p>
+
+<p>Good luck!</p>
+
+<hr>
+<p>Please reply to this email to let Adam know if:</p>
+<ul>
+<li>You don't want to receive these automated reminders
+<li>You want them to be sent to a different address
+<li>You are not able to read the details in this email correctly.
+</ul>
+</body>
+</html>

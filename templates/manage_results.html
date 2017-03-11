@@ -1,0 +1,161 @@
+<script type="text/javascript">
+	function disableAll(val, form) {
+		form.opponent_goals.disabled = val;
+		{% for p in players %}
+		form.goals_{{p.db_key|escape}}.disabled = val;
+		{% endfor %}
+		form.other_goals.disabled = val;
+		form.own_goals.disabled = val;
+	}
+	
+	function updateForfeit(form, checkbox) {
+		if (checkbox.checked) {
+		// turning on the forfeit
+			disableAll(true, form);
+			var result, deewhy_score, opponent_score;
+			if (checkbox.id == "deewhy_forfeit") {
+				form.opponent_forfeit.disabled = true;
+				//deewhy_score = 0;
+				//opponent_score = 5;
+				result = "Loss";
+			} else {
+				form.deewhy_forfeit.disabled = true;
+				//deewhy_score = 5;
+				//opponent_score = 0;
+				result = "Win";
+			}
+			//document.getElementById("deewhy_goals_display").innerHTML = deewhy_score;
+			//form.deewhy_goals.value = deewhy_score;
+			//form.opponent_goals.value = opponent_score;
+			document.getElementById("result").innerHTML = result;
+		} else {
+		// switching it off
+			disableAll(false, form);
+			form.deewhy_forfeit.disabled = false;
+			form.opponent_forfeit.disabled = false;
+			//form.opponent_goals.value = 0;
+			updateScore(form);
+		}
+	}
+
+	function getFieldValue(form, field) {
+		if (/^[0-9]+$/.test(field.value)) {
+			return parseInt(field.value, 10);
+		} else if (field.value.length == 0){
+			return 0;
+		} else {
+			form.submit.disabled=true;
+			return NaN;
+		}
+	}
+
+	function updateScore(form) {
+		var valid = true;
+		var deewhy_score = 0;
+		{% for p in players %}
+		deewhy_score += getFieldValue(form, form.goals_{{p.db_key|escape}});
+		{% endfor %}
+		deewhy_score += getFieldValue(form, form.other_goals);
+		deewhy_score += getFieldValue(form, form.own_goals);
+		if (isNaN(deewhy_score)) valid = false;
+
+		opponent_score = getFieldValue(form, form.opponent_goals);
+		if (isNaN(opponent_score)) valid = false;
+		
+		if (valid) {
+			form.submit.disabled=false;
+			var result = "Draw";
+			if (deewhy_score > opponent_score) result = "Win";
+			else if (deewhy_score < opponent_score) result = "Loss";
+			document.getElementById("deewhy_goals_display").innerHTML = deewhy_score;
+			form.deewhy_goals.value = deewhy_score;
+			document.getElementById("result").innerHTML = result;
+		} else {
+			document.getElementById("deewhy_goals_display").innerHTML = "N/A";
+			form.deewhy_goals.value = "N/A";
+			document.getElementById("result").innerHTML = "N/A";
+		}		
+	}
+</script>
+
+{% ifequal "0" url_args.year %}
+	<p id="playerheader">
+		Results: Select a year first
+	</p>
+{% else %}
+	{% if not url_args.round %}
+		<p id="playerheader">
+			Please select a round
+		</p>
+	{% else %}
+		<p id="playerheader">
+			Results for
+			{% ifequal "" round.caption %}
+				Round {{ round.num }},
+			{% else %}
+				{{ round.caption }},
+			{% endifequal %} {{ round.date|date:"D d M Y" }}
+		</p>
+		<form action="/manage/results/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}" method="post" name="results_form">
+			<input type="hidden" id="round_num" name="round_num" value="{{ round.num }}"/>
+			<table>
+				<tr>
+					<td>Match result:</td>
+					<td><span id="result" name="result">{{ result.get_result_str }}</span></td>
+				</tr>
+					<td>Dee Why:</td>
+					<input type="hidden" id="deewhy_goals" name="deewhy_goals" value="{{ result.deewhy_goals }}"/>
+					<td><span id="deewhy_goals_display" name="deewhy_goals_display">{{ result.deewhy_goals }}</span/></td>
+					<td><input id="deewhy_forfeit" name="deewhy_forfeit" type="checkbox" onchange="updateForfeit(this.form, this)"
+					{% if result.deewhy_forfeit %}checked{% endif %}/>Forfeited</td>
+				<tr>
+				</tr>
+					<td>{{ round.opponent }}:</td>
+					<td><input size="3" id="opponent_goals" name="opponent_goals" value="{% ifnotequal None result.opponent_goals %}{{ result.opponent_goals }}{% endifnotequal %}"
+					onkeyup="updateScore(this.form)" onchange="updateScore(this.form)"/></td>
+					<td><input id="opponent_forfeit" name="opponent_forfeit" type="checkbox" onchange="updateForfeit(this.form, this)"
+					{% if result.opponent_forfeit %}checked{% endif %}/>Forfeited</td>
+				<tr>
+					<td colspan="2"><br/>Goals:</td>
+				</tr>
+				{% for p in players %}
+				<tr>
+					<td>
+						{{ p.first_name }} {{ p.last_name }}:
+					</td>
+					<td>
+						<input size="3" id="goals_{{ p.db_key|escape }}" name="goals_{{ p.db_key|escape }}"
+						value="{% for s in result.scorer_set %}{% ifequal s.player.db_key p.db_key %}{{ s.count }}{% endifequal %}{% endfor %}"
+						onkeyup="updateScore(this.form)" onchange="updateScore(this.form)">
+					</td>
+				</tr>
+				{% endfor %}
+				<tr>
+					<td>
+						Others:
+					</td>
+					<td>
+						<input size="3" id="other_goals" name="other_goals" value="{% ifnotequal None result.other_goals %}{{ result.other_goals }}{% endifnotequal %}"
+						onkeyup="updateScore(this.form)" onchange="updateScore(this.form)">
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Own goals:
+					</td>
+					<td>
+						<input size="3" id="own_goals" name="own_goals" value="{% ifnotequal None result.own_goals %}{{ result.own_goals }}{% endifnotequal %}"
+						onkeyup="updateScore(this.form)" onchange="updateScore(this.form)">
+					</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td>
+						<input id="submit" name="submit" type="submit" value="Save"/>
+					</td>
+				</tr>
+			</table>
+		</form>
+	{% endif %}
+{% endifequal %}

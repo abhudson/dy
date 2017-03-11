@@ -1,0 +1,110 @@
+<script type="text/javascript">
+	function validateForm(form) {
+		if (form.first_name.value == '') {
+			alert('Please enter a first name');
+			form.first_name.select();
+			form.first_name.focus();
+			return false
+		}
+		if (form.last_name.value == '') {
+			alert('Please enter a last name');
+			form.last_name.select();
+			form.last_name.focus();
+			return false
+		}
+		if (form.email.value == '') {
+			alert('Please enter an email address');
+			form.email.select();
+			form.email.focus();
+			return false
+		}
+		return true;
+	}
+</script>
+
+<p id="playerheader">
+{% if new_player %}
+	New player details
+{% else %}
+	Details for {{ current.first_name }} {{ current.last_name }}
+{% endif %}
+</p>
+
+<form action="/manage/player/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}" method="post" onsubmit="return validateForm(this)">
+	<input type="hidden" id="key_name" name="key_name" value="{{ current.db_key }}"/>
+	<input type="hidden" id="do_delete" name="do_delete" value="false"/>
+	<table>
+		<tr>
+			<td>First name:</td>
+			<td>
+				<input type="text" size="30" id="first_name" name="first_name" value="{{ current.first_name }}"/>*
+			</td>
+		</tr>
+		<tr>
+			<td>Last name:</td>
+			<td>
+				<input type="text" size="30" id="last_name" name="last_name" value="{{ current.last_name }}"/>*
+			</td>
+		</tr>
+		<tr>
+			<td>Nick name:</td>
+			<td>
+				<input type="text" size="30" id="nick_name" name="nick_name" value="{{ current.nick_name }}"/>
+			</td>
+		</tr>
+		<tr>
+			<td>email:</td>
+			<td>
+				<input type="text" size="30" id="email" name="email" value="{{ current.email }}"/>*
+			</td>
+		</tr>
+		<tr>
+			<td>Phone number:</td>
+			<td>
+				<input type="text" size="30" id="phone" name="phone" value="{{ current.phone }}"/>
+			</td>
+		</tr>
+		<tr>
+			<td>Shirt number:</td>
+			<td>
+				<input type="text" size="2" id="shirt" name="shirt" value="{{ current.shirt }}"/>
+			</td>
+		</tr>
+		<tr>
+			<td>Registration number:</td>
+			<td>
+				<input type="text" size="30" id="registration" name="registration" value="{{ current.registration }}"/>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">Years played:</td>
+		</tr>
+		{% for y in past_years %}
+		<tr>
+			<td colspan="2">
+			<input type="checkbox" id="played_{{y}}" name="played_{{y}}"
+			{% for played_year in current.year_list %}
+				{% ifequal y played_year.year %}checked{% endifequal %}
+			{% endfor %}
+			/>{{y}}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<table>
+		<tr>
+			<td>
+				<input type="submit" value="Save"/>
+			</td>
+			<td>
+				<input type="button" value="New player" onclick="document.location.href='/manage/player/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}'"/>
+			</td>
+			<td>
+				<input type="submit" value="Delete" id="delete_button" name="delete_button" onclick="this.form.do_delete.value='true'; this.submit();" {% if new_player %}disabled{% endif %}/>
+			</td>
+			<td>
+				<input type="checkbox" id="do_flush" name="do_flush"/>Flush cache on submit
+			</td>
+		</tr>
+	</table>
+</form>

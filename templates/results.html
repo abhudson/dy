@@ -1,0 +1,9 @@
+{% for r in results %}
+	<div class="fixedbodyitem">
+		<p><span class="roundnum">{% ifequal "" r.round.caption %}Rd {{ r.round.num }}{% else %}{{ r.round.caption }}{% endifequal %}:</span> {{ r.round.date|date:"D d M" }}
+		{% ifequal url_args.year "0" %} {{r.year}}{% endifequal %}</p>
+		<p>vs {{ r.round.opponent }}
+		<p>{{ r.get_result_str }}: {% if r.deewhy_forfeit or r.opponent_forfeit %}Forfeit{% else %}{{ r.deewhy_goals }}-{{ r.opponent_goals }}{% endif %}</p>
+		<p>Goals: {{ r.get_scorer_str }}
+	</div>
+{% endfor %}

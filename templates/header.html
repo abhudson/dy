@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1"/>
+	<meta name="author" content="Adam Hudson"/>
+	<meta name="robots" content="all"/>
+	<meta name="description" content="Dee Why AL5 team page"/>
+	<meta name="keywords" content="Dee Why Soccer AL5"/>
+	<title>Dee Why AL5</title>
+	
+	<link rel="SHORTCUT ICON" href="/images/deewhy.ico">
+	<link rel="stylesheet" href="/style/style.css"/>
+</head>
+
+<body>
+
+<div id="title">
+	<h1>Dee Why Soccer AL5{% if year %} ({{ year }}){% endif %}</h1>
+</div>
+
+<!-- The navigation bar -->
+<div id="navigation">
+{% for t in tabs %}
+	<a href="/{{ t.0 }}" class="{% if t.1 %}{% if forloop.first %}main{% endif %}curr{% endif %}menuitem">{{ t.2 }}</a>
+{% endfor %}
+</div>

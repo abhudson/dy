@@ -1,0 +1,9 @@
+cron:
+#- description: temp round check
+#  url: /manage/mailer/
+#  schedule: every 1 minutes
+  
+- description: daily round check
+  url: /manage/mailer/?days=1
+  schedule: every day 12:00
+  timezone: Australia/NSW

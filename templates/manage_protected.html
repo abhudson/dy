@@ -1,0 +1,20 @@
+<table class="squadtable">
+	<tr>
+		<th>Player</th>
+		<th>Email</th>
+		<th>Phone</th>
+		<th>Shirt</th>
+		<th>Rego</th>
+		<th>Years Played</th>
+	</tr>
+	{% for p in players %}
+	<tr>
+		<td>{{p.first_name}} {{p.last_name}}</td>
+		<td>{{p.email}}</td>
+		<td>{{p.phone}}</td>
+		<td>{{p.shirt}}</td>
+		<td>{{p.registration}}</td>
+		<td>{% for y in p.year_list %}{{ y.year }}{% if not forloop.last %}, {% endif %} {% endfor %}</td>
+	</tr>
+	{% endfor %}
+</table>

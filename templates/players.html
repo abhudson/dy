@@ -1,0 +1,14 @@
+<div id="playerindex">
+	<div class="playersummary">
+		<p><a href="{% ifnotequal None url_args.year %}?year={{url_args.year}}{% else %}.{% endifnotequal %}">SUMMARY</a></p>
+	</div>
+	{% for p in players %}
+		<div class="playername">
+			<p><a href="{{url_args.base_url}}/player/?player={{p.db_key}}{% ifnotequal None url_args.year %}&year={{url_args.year}}{% endifnotequal %}">{{p.first_name}} {{p.last_name}}</a></p>
+		</div>
+	{% endfor %}
+	<div class="playersummary">
+		<p class="protected"><a href="/protected/">CONTACTS</a></p>
+	</div>
+	<img src="/images/deewhylogo_100.gif"/>
+</div>

@@ -1,0 +1,46 @@
+<!-- <span id="weekcontainer"> -->
+{% ifequal None player %}
+	<p id="playerheader">
+		Player details: Select a valid player first
+	</p>
+{% else %}
+	{% ifequal "0" url_args.year %}
+		<p id="playerheader">
+			Player details: Select a year first
+		</p>
+	{% else %}
+		<form method="post" action="/player/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}">
+		<div id="playerheader">Details for {{player.first_name}} {{player.last_name}}</div>
+		<input type="hidden" name="updated" value="{{ player.db_key }}"/>
+		{% for r in rounds %}
+		<div class="bodyitem">
+			<p><span class="roundnum">{% ifequal "" r.caption %}Rd {{ r.num }}{% else %}{{ r.caption }}{% endifequal %}:</span>
+			{{ r.date|date:"D d M" }}{% ifequal url_args.year "0" %} {{ r.year }}{% endifequal %}{{ r.time|time:", fA" }}</p>
+			<p><input type="radio" id="{{r.year}}-{{r.num}}" name="{{r.year}}-{{r.num}}" value="0" 
+			{% for a in r.availability_set %}
+				{% ifequal a.player.db_key player.db_key %}
+					{% ifequal r.date a.given_date %}
+						{% if a.playing %}
+								checked
+						{% endif %}
+					{% endifequal %}
+				{% endifequal %}
+			{% endfor %}
+			{% ifnotequal None r.result.get %}disabled{% endifnotequal %} />Playing</p>
+			<p><input type="radio" id="{{r.year}}-{{r.num}}" name="{{r.year}}-{{r.num}}" value="3" 
+			{% for a in r.availability_set %}
+				{% ifequal a.player.db_key player.db_key %}
+					{% ifequal r.date a.given_date %}
+						{% if not a.playing %}
+							checked
+						{% endif %}
+					{% endifequal %}
+				{% endifequal %}
+			{% endfor %}
+			{% ifnotequal None r.result.get %}disabled{% endifnotequal %} />Not playing</p>
+		</div>
+		{% endfor %}
+		<div class="submitbutton"><input type="submit" value="Submit changes"/></div>
+		</form>
+	{% endifequal %}
+{% endifequal %}

@@ -1,0 +1,11 @@
+<div id="playerindex">
+	<div class="playersummary">
+		<p>GROUNDS</p>
+	</div>
+	{% for g in grounds %}
+		<div class="playername">
+			<p><a href="{{url_args.base_url}}/?ground={{g.key}}{% ifnotequal None url_args.year %}&year={{url_args.year}}{% endifnotequal %}">{{g.name}}</a></p>
+		</div>
+	{% endfor %}
+	<img src="/images/deewhylogo_100.gif"/>
+</div>

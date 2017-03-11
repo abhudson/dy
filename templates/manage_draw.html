@@ -1,0 +1,126 @@
+<script type="text/javascript">
+	function validateForm(form) {
+		if (form.num.value != parseInt(form.num.value)) {
+			alert('Please enter a numeric round number');
+			form.num.select();
+			form.num.focus();
+			return false
+		}
+		if (!(/^\s*[0-9][0-9]?\/[0-9][0-9]?\/[0-9][0-9]([0-9][0-9])?\s*$/.test(form.date.value))) {
+			alert('Please enter a date in dd/mm/yy or dd/mm/yyyy format');
+			form.date.select();
+			form.date.focus();
+			return false;
+		}
+		if (form.time.value != '' && !(/^\s*[012][0-9]:[0-5][0-9]\s*$/.test(form.time.value))) {
+			alert('Please enter a 24 hour time in hh:mm format');
+			form.time.select();
+			form.time.focus();
+			return false;
+		}
+		if (form.date.value == '') {
+			alert('Please enter a first name');
+			form.date.focus();
+			return false;
+		}
+		if (form.date.value == '') {
+			alert('Please enter a last name');
+			form.date.focus();
+			return false;
+		}
+		if (form.email.value == '') {
+			alert('Please enter an email address');
+			form.date.focus();
+			return false;
+		}
+		return true;
+	}
+</script>
+
+<p id="playerheader">
+{% if new_round %}
+	New round details
+{% else %}
+	{% ifequal "" current.caption %}
+		Details for round {{ current.num }}
+	{% else %}
+		Details for {{ current.caption }}
+	{% endifequal %}
+{% endif %}
+</p>
+<form action="/manage/draw/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}" method="post" name="round_form" onsubmit="return validateForm(this)">
+	<input type="hidden" id="key_name" name="key_name" value="r_{{ current.date.year }}-{{ current.num }}"/>
+	<input type="hidden" id="do_delete" name="do_delete" value="false"/>
+	<table>
+		<tr>
+			<td>Round number:</td>
+			<td>
+				<input type="text" size="3" id="num" name="num" value="{{ current.num }}"/>*
+			</td>
+		</tr>
+		<tr>
+			<td>Round caption:</td>
+			<td>
+				<input type="text" size="20" id="caption" name="caption" value="{{ current.caption }}"/>
+			</td>
+		</tr>
+		<tr>
+			<td>Date:</td>
+			<td>
+				<input type="text" size="10" maxlength="10" id="date" name="date" value='{{ current.date|date:"d/m/Y" }}'/>* (dd/mm/yy or dd/mm/yyyy)
+			</td>
+		</tr>
+		<tr>
+			<td>Time:</td>
+			<td>
+				<input type="text" size="5" maxlength="5" id="time" name="time" value='{{ current.time|time:"H:i" }}'/> (hh:mm, 24 hour time)
+			</td>
+		</tr>
+		<tr>
+			<td>Opponent:</td>
+			<td>
+				<input type="text" size="30" id="opponent" name="opponent" value="{{ current.opponent }}"/>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<input type="radio" id="homeaway" name="homeaway" value="home" {% ifequal "home" current.homeaway %}checked{% endifequal %}>Home</input>
+				<input type="radio" id="homeaway" name="homeaway" value="away" {% ifequal "away" current.homeaway %}checked{% endifequal %}>Away</input>
+				<input type="radio" id="homeaway" name="homeaway" value="" {% ifnotequal "home" current.homeaway %}{% ifnotequal "away" current.homeaway %}checked{% endifnotequal %}{% endifnotequal %}>Unknown</input>
+			</td>
+		</tr>
+		<tr>
+			<td>Location:</td>
+			<td>
+				<select id="location" name="location" value="{{ current.location }}">
+					{% for g in grounds %}
+  					<option value="{{ g.key }}" {% ifequal g.key current.location.key %}selected="selected"{% endifequal %}>{{ g.name }}</option>
+	  				{% endfor %}
+				</select>
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td>
+				<input type="submit" value="Save" onclick="submit()"/>
+			</td>
+			<td>
+				<input type="button" value="New round" onclick="document.location.href='/manage/draw/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}'"/>
+			</td>
+			<td>
+				<input type="submit" value="Delete" id="delete_button" name="delete_button" onclick="submit()" {% if new_round %}disabled{% endif %}/>
+			</td>
+		</tr>
+	</table>
+	<hr/>
+	{% for r in rounds %}
+	<div class="bodyitem">
+		<p><span class="roundnum"><a href="/manage/draw/?round={{ r.num }}&year={{r.year}}" class="maplink">{% ifequal "" r.caption %}Rd {{ r.num }}{% else %}{{ r.caption }}{% endifequal %}</a>:</span>
+		{{ r.date|date:"D d M" }}{% ifequal url_args.year "0" %} {{r.year}}{% endifequal %}{{ r.time|time:", fA" }}</p>
+		<p>{{ r.location.name }}</a> {% ifequal r.homeaway "home" %}(H){% endifequal %}{% ifequal r.homeaway "away" %}(A){% endifequal %}</p>
+        <p>vs {{ r.opponent }}</p>
+	</div>
+	{% endfor %}
+</form>

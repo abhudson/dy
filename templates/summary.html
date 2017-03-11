@@ -1,0 +1,14 @@
+{% for r in rounds %}
+	{% ifequal None r.result.get %}
+		{% if r.is_current %}
+		<div class="bodyitem">
+			<p><span class="roundnum">{% ifequal "" r.caption %}Rd {{ r.num }}{% else %}{{ r.caption }}{% endifequal %}:</span>
+			{{ r.date|date:"D d M" }}{% ifequal url_args.year "0" %} {{ r.year }}{% endifequal %}{{ r.time|time:", fA" }}</p>
+			<p><a href="{{ r.location.map }}" class="maplink" target="_blank">{{ r.location.name }}</a> {% ifequal r.homeaway "home" %}(H){% endifequal %}{% ifequal r.homeaway "away" %}(A){% endifequal %}</p>
+		    <p>vs {{ r.opponent }}</p>
+			<p>Players: {{ r.get_player_count }}</p>
+			<p>Away: {{ r.get_away_str }}</p>
+		</div>
+		{% endif %}
+	{% endifequal %}
+{% endfor %}

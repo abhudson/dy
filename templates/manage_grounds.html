@@ -1,0 +1,68 @@
+<script type="text/javascript">
+	function validateForm(form) {
+		if (form.name.value == '') {
+			alert('Please enter a ground name');
+			form.name.select();
+			form.name.focus();
+			return false
+		}
+		if (form.last_name.value == '') {
+			alert('Please enter an address');
+			form.address.select();
+			form.address.focus();
+			return false
+		}
+		if (form.email.map == '') {
+			alert('Please enter a map URL');
+			form.map.select();
+			form.map.focus();
+			return false
+		}
+		return true;
+	}
+</script>
+
+<p id="playerheader">
+{% if new_ground %}
+	New ground details
+{% else %}
+	Details for {{ current.name }}
+{% endif %}
+</p>
+<form action="/manage/ground/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}" method="post" onsubmit="return validateForm(this)">
+	<input type="hidden" id="db_key" name="db_key" value="{{ current.db_key }}"/>
+	<input type="hidden" id="do_delete" name="do_delete" value="false"/>
+	<table>
+		<tr>
+			<td>Ground name:</td>
+			<td>
+				<input type="text" size="30" id="name" name="name" value="{{ current.name }}"/>*
+			</td>
+		</tr>
+		<tr>
+			<td>Address:</td>
+			<td>
+				<input type="text" size="30" id="address" name="address" value="{{ current.address }}"/>*
+			</td>
+		</tr>
+		<tr>
+			<td>Map URL:</td>
+			<td>
+				<input type="text" size="30" id="map" name="map" value="{{ current.map }}"/>*
+			</td>
+		</tr>
+	</table>
+	<table>
+		<tr>
+			<td>
+				<input type="submit" value="Save"/>
+			</td>
+			<td>
+				<input type="button" value="New ground" onclick="document.location.href='/manage/ground/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}'"/>
+			</td>
+			<td>
+				<input type="submit" value="Delete" id="delete_button" name="delete_button" onclick="this.form.do_delete.value='true'; this.submit();" {% if new_ground %}disabled{% endif %}/>
+			</td>
+		</tr>
+	</table>
+</form>

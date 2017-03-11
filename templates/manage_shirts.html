@@ -1,0 +1,40 @@
+{% ifequal "0" url_args.year %}
+	<p id="playerheader">
+		Shirt washing: Select a year first
+	</p>
+{% else %}
+	<p id="playerheader">
+		Shirt washing for {{ url_args.year }}
+	</p>
+	<form action="/manage/shirts/{% ifnotequal None url_args.year %}?year={{url_args.year}}{% endifnotequal %}" method="post" name="shirt_form">
+		<table>
+			{% for r in rounds %}
+			<tr>
+				<td>
+				{% ifequal "" r.caption %}
+					Round {{ r.num }}:
+				{% else %}
+					{{ r.caption }}:
+				{% endifequal %}
+				</td>
+				<td>
+					<select id="{{r.year}}-{{r.num}}" name="{{r.year}}-{{r.num}}">
+	 					<option value="unknown" {% ifequal r.shirt_set.get.washer "unknown" %}selected="selected"{% endifequal %}>Don't know</option>
+	 					<option value="nobody" {% ifequal r.shirt_set.get.washer "nobody" %}selected="selected"{% endifequal %}>Nobody</option>
+						{% for p in players %}
+	  					<option value="{{ p.db_key }}" {% ifequal p.db_key r.shirt_set.get.washer %}selected="selected"{% endifequal %}>{{ p.first_name }} {{ p.last_name }}</option>
+		  				{% endfor %}
+		  			</select>
+				</td>
+			</tr>
+			{% endfor %}
+		</table>
+		<table>
+			<tr>
+				<td>
+					<input type="submit" value="Save"/>
+				</td>
+			</tr>
+		</table>
+	</form>
+{% endifequal %}
